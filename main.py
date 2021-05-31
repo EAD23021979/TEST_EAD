@@ -13,6 +13,8 @@ class Tateti:
 	Lista_user2 = []
 	Partido_Cerrado = 0
 	VL = 0
+	lista_de_opciones_matriz = []
+	winall_auto_step2 = []
 
 	def __init__(self, origen="consola"):
 		self.origen = origen
@@ -23,29 +25,57 @@ class Tateti:
 		elif self.origen == "test":
 			return test_value
 
-	def definir_matriz(self):
-		
-
-	def empezar(self):
+	def definir_matriz(self, tamanio=3):
 		try:
-			n_matriz = int(self.input_usuario("De qué tamaño requerimos la matriz: " ))
-			self.VL = n_matriz
+			self.VL = int(self.input_usuario("De qué tamaño requerimos la matriz: " ))
 		except Exception:
-			print("Esta mal tu input, queria un numero y me diste otra cosa")
-			return
+			self.VL = tamanio
+		if self.VL < 3:
+			self.VL = tamanio
+		return
 
-		while self.VL<3:
-			print ()
-			self.VL = int(self.input_usuario("El valor minimo es 3. por favor vuelva a ingresar el tamaño de la matriz deseada: " ))
+	def input_jugador(self, numero_jugador, jugada=None):
+		if numero_jugador == "1":
+			ficha = "X"
+		else:
+			ficha = "0"
+		if self.origen == "test":
+			input_user = jugada
+		else:
+			input_user = self.input_usuario("Elija un opción Jugador %s [%s]: " % (numero_jugador, ficha)).upper()
 
-		list_count =[]
+
+		while input_user not in self.lista_de_opciones_matriz or input_user in ("X", "0"):
+			input_user = self.input_usuario("Elija un opción Jugaror 1 [X]: ").upper()
+
+		if input_user in self.lista_de_opciones_matriz:
+			if numero_jugador == "1":
+				self.Lista_user1.append(input_user)
+				if self.validacion_ganadores(self.Lista_user1) == 1:
+					print("GANO EL JUGADOR 1 [X]")
+			else:
+				self.Lista_user2.append(input_user)
+				if self.validacion_ganadores(self.Lista_user2) == 1:
+					print("GANO EL JUGADOR 2 [0]")
+			
+			self.lista_de_opciones_matriz = [ficha if i == input_user else i for i in self.lista_de_opciones_matriz]
+			# print(self.lista_de_opciones_matriz)
+			self.print_matriz(self.lista_de_opciones_matriz)
+		# DEBUGMODE print ("Lista_user1: ", Lista_user1)
+		# DEBUGMODE print ("Lista_user2:", Lista_user2)
+
+		else:
+			print("Crap")
+
+	def inicializar_tablero(self):
+		self.definir_matriz()
+		list_count = []
 		for i in range (self.VL):
 			list_count.append(i)
-			#print(list_count)
 
-		self.VL1=self.VL
+		self.VL1 = self.VL
 		# Genera la Lista ganadora, que es una lista de listas.
-		WinAll_Auto_Step1=[] #Genera la lista de items ganadores sin agruparlos, pero en orden del 1 al n -> Ejemplo A1,A2,A3
+		WinAll_Auto_Step1 = [] #Genera la lista de items ganadores sin agruparlos, pero en orden del 1 al n -> Ejemplo A1,A2,A3
 
 
 		#Letra_ABC(0)
@@ -83,30 +113,30 @@ class Tateti:
 		# for i in range(self.VL):
 		# 	WinAll_Auto_Step1.append(Letra_ABC(0+i)+str(3))
 
-		WinAll_Auto_Step2=[] #Agrupa los resultados en elemento de 3 componentes -> ['A1','A2','A3'],['B1','B2','B3']
+		self.winall_auto_step2=[] #Agrupa los resultados en elemento de 3 componentes -> ['A1','A2','A3'],['B1','B2','B3']
 		#print (len(WinAll_Auto_Step1))
 
 		# Go -Este paso es el que genera los Segmentos de elementos agrupados de a 3 o 4 o lo que defina self.VL. Que en resumen serán los segmentos que si algun jugador agruapa lo hace ganar
 		for i in range (0,len(WinAll_Auto_Step1),self.VL):
 			#print(i)
-			WinAll_Auto_Step2.append(list(WinAll_Auto_Step1[i:i+self.VL]))
+			self.winall_auto_step2.append(list(WinAll_Auto_Step1[i:i+self.VL]))
 
 
 		# ******************************************************************************************
 		# Generar la lista de  opciones a elegir para generar la matriz
 		# ******************************************************************************************
 
-		Lista_de_Opciones_matriz=[]
+		self.lista_de_opciones_matriz = []
 
 		for a in list_count:
 
 			for i in range(self.VL):
 				#print ("I", i)
 				#print ("self.VL", self.VL)
-				Lista_de_Opciones_matriz.append(self.Letra_ABC(a)+str(i+1))
+				self.lista_de_opciones_matriz.append(self.Letra_ABC(a)+str(i+1))
 
 
-		#print("Lista_de_Opciones_matri", Lista_de_Opciones_matriz)
+		#print("Lista_de_Opciones_matri", self.lista_de_opciones_matriz)
 
 
 
@@ -115,19 +145,13 @@ class Tateti:
 		#print(WinAll_Auto_Step1)
 
 		#print("Lista de elementos previos a la ganadora", WinAll_Auto_Step1)
-		#DEBUGMODE print("Lista de Segmentos Ganadora", WinAll_Auto_Step2)
+		#DEBUGMODE print("Lista de Segmentos Ganadora", self.winall_auto_step2)
 
-		#DEBUGMODE print("Cantidad de combinaciones pata ganar", len(WinAll_Auto_Step2))
+		#DEBUGMODE print("Cantidad de combinaciones pata ganar", len(self.winall_auto_step2))
 
 		# Con las siguiente 4 Linea se genera  la matriz a presentar en el front End
 
-		self.print_matriz(Lista_de_Opciones_matriz)
-
-		# Listas que acumulan lo elegido por aca User
-		Matriz_front_end = []
-		hay_ganador = []
-
-		termino_el_juego = 1  # Si etemino del juego es 0 se terminó el juego
+		self.print_matriz(self.lista_de_opciones_matriz)
 
 		print(" ")
 		# print ("Lista Jugador 1" , Lista_user1)
@@ -137,43 +161,28 @@ class Tateti:
 		# print_matriz()
 		# print (" ")
 
-		contador = 0  # Define el inicio del cotador de jugadas
+	def empezar(self):
+		
+		self.inicializar_tablero()
+
 		turno = 0
+		termino_el_juego = 1  # Si etemino del juego es 0 se terminó el juego
 
 		while termino_el_juego == 1:
 
 			turno = turno + 1
 			# DEBUGMODE print ("Turno:" ,turno)
-			# WinAll_Auto_Step2=Actualizar_lista ()
-			# print ("SISMO",WinAll_Auto_Step2)
-			# Contar_X(WinAll_Auto_Step2)
+			# self.winall_auto_step2=Actualizar_lista ()
+			# print ("SISMO",self.winall_auto_step2)
+			# Contar_X(self.winall_auto_step2)
 			# Entrada Jugardor 1
 			if turno > (self.VL * self.VL):
 				print("TABLAS")
 				break
 
-			input_user1 = self.input_usuario("Elija un opción Jugaror 1 [X]: ").upper()
-			# input_user1= input_user1a.upper()
-			# DEBUGMODE print (input_user1)
-			# print (input_user1)
+			self.input_jugador("1")
 
-			while input_user1 not in Lista_de_Opciones_matriz or input_user1 in ("X", "0"):
-				input_user1 = self.input_usuario("Elija un opción Jugaror 1 [X]: ").upper()
-
-			if input_user1 in Lista_de_Opciones_matriz:
-				self.Lista_user1.append(input_user1)
-				Lista_de_Opciones_matriz = ["X" if i == input_user1 else i for i in Lista_de_Opciones_matriz]
-				# print(Lista_de_Opciones_matriz)
-				self.print_matriz(Lista_de_Opciones_matriz)
-			# DEBUGMODE print ("Lista_user1: ", Lista_user1)
-			# DEBUGMODE print ("Lista_user2:", Lista_user2)
-
-			else:
-				print("Crap Judador1")
-
-			# VALIDAR SI GANÓ Jugaror 1?
-
-			termino_el_partido = self.Validacion_Ganadores(WinAll_Auto_Step2, self.Lista_user1)
+			termino_el_partido = self.validacion_ganadores(self.Lista_user1)
 			# print (termino_el_partido)
 			# print ("Partido_Cerrado After F", Partido_Cerrado)
 			if termino_el_partido == 1:
@@ -187,36 +196,19 @@ class Tateti:
 			turno = turno + 1
 			# DEBUGMODE print ("Turno",turno)
 			# Actualizar_lista () # No entiendo porqué si actulizo la lista, cuando la toma para valider en el while lo hace con la antigua.
-			# print ("EMi",WinAll_Auto_Step2) # Acá es donde se envidencia que la liata WinAll_Auto_Step2 no es la que debería ser luego de correr la función.
+			# print ("EMi",self.winall_auto_step2) # Acá es donde se envidencia que la liata self.winall_auto_step2 no es la que debería ser luego de correr la función.
 			if turno > (self.VL * self.VL):
 				print("TABLAS")
 				break
 
-			input_user2 = self.input_usuario("Elija un opción Judador 2 [0]: ").upper()
+			self.input_jugador("2")
 
-			while input_user2 not in Lista_de_Opciones_matriz or input_user1 in ("X", "0"):
-				input_user2 = self.input_usuario("Elija un opción Jugaror 2 [0]: ").upper()
-
-			if input_user2 in Lista_de_Opciones_matriz:
-				self.Lista_user2.append(input_user2)
-				Lista_de_Opciones_matriz = ["0" if i == input_user2 else i for i in Lista_de_Opciones_matriz]
-				self.print_matriz(Lista_de_Opciones_matriz)
-			# DEBUGMODE print ("Lista_user1: ", Lista_user1)
-			# DEBUGMODE print ("Lista_user2:", Lista_user2)
-
-			else:
-				print("Crapjugador2")
-
-			# VALIDAR SI GANÓ Jugaror 2?
-
-			termino_el_partido = self.Validacion_Ganadores(WinAll_Auto_Step2, self.Lista_user2)
+			termino_el_partido = self.validacion_ganadores(self.Lista_user2)
 			# print (termino_el_partido)
 			# print ("Partido_Cerrado After F", Partido_Cerrado)
 			if termino_el_partido == 1:
 				print("GANO EL JUGADOR 2 [0]")
 				break
-			else:
-				pass
 
 		print("FIN DEL JUEGO")
 
@@ -251,14 +243,13 @@ class Tateti:
 		print ("******"*self.VL)
 		return Matriz_front_end
 
-	def Validacion_Ganadores(self, WinAll_Auto_Step2, listaPlayer): #Esta función valida si la lista de alguno de los ganadore es GANADORA
+	def validacion_ganadores(self, listaPlayer): #Esta función valida si la lista de alguno de los ganadore es GANADORA
 
-		comparando=[]
 		Partido_Cerrado = 0
 
-		for a in WinAll_Auto_Step2:
+		for a in self.winall_auto_step2:
 			comparando =[]
-			#DEBUGMODE print ("Fun_WinAll_Auto_Step2", WinAll_Auto_Step2)
+			#DEBUGMODE print ("Fun_self.winall_auto_step2", self.winall_auto_step2)
 			#DEBUGMODE print ("FunC(a)", a)
 			if len(comparando)<=self.VL:
 
@@ -276,11 +267,6 @@ class Tateti:
 							#DEBUGMODE print ("Partido_Cerrado Func", Partido_Cerrado)
 							return Partido_Cerrado
 
-						else:
-							#DEBUGMODE print ("NO HAY GANADOR")
-
-							#return hay_ganador
-							a
 					else:
 						if len(comparando)>=self.VL:
 							break
@@ -293,7 +279,3 @@ class Tateti:
 
 		print ("out of loop")
 
-
-
-#j = Tateti()
-#j.empezar()
