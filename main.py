@@ -8,22 +8,35 @@
 import string #importo funciones para tener el abecedario en una lista.
 
 
-class jugar:
+class Tateti:
 	Lista_user1 = []
 	Lista_user2 = []
 	Partido_Cerrado = 0
 	VL = 0
 
-	def __init__(self):
-		self.VL = int(input("De qué tamaño requerimos la matriz: " ))
-		self.empezar()
+	def __init__(self, origen="consola"):
+		self.origen = origen
 
+	def input_usuario(self, msg, test_value=""):
+		if self.origen == "consola":
+			return input(msg)
+		elif self.origen == "test":
+			return test_value
+
+	def definir_matriz(self):
+		
 
 	def empezar(self):
+		try:
+			n_matriz = int(self.input_usuario("De qué tamaño requerimos la matriz: " ))
+			self.VL = n_matriz
+		except Exception:
+			print("Esta mal tu input, queria un numero y me diste otra cosa")
+			return
 
 		while self.VL<3:
 			print ()
-			self.VL = int(input("El valor minimo es 3. por favor vuelva a ingresar el tamaño de la matriz deseada: " ))
+			self.VL = int(self.input_usuario("El valor minimo es 3. por favor vuelva a ingresar el tamaño de la matriz deseada: " ))
 
 		list_count =[]
 		for i in range (self.VL):
@@ -139,13 +152,13 @@ class jugar:
 				print("TABLAS")
 				break
 
-			input_user1 = input("Elija un opción Jugaror 1 [X]: ").upper()
+			input_user1 = self.input_usuario("Elija un opción Jugaror 1 [X]: ").upper()
 			# input_user1= input_user1a.upper()
 			# DEBUGMODE print (input_user1)
 			# print (input_user1)
 
 			while input_user1 not in Lista_de_Opciones_matriz or input_user1 in ("X", "0"):
-				input_user1 = input("Elija un opción Jugaror 1 [X]: ").upper()
+				input_user1 = self.input_usuario("Elija un opción Jugaror 1 [X]: ").upper()
 
 			if input_user1 in Lista_de_Opciones_matriz:
 				self.Lista_user1.append(input_user1)
@@ -179,10 +192,10 @@ class jugar:
 				print("TABLAS")
 				break
 
-			input_user2 = input("Elija un opción Judador 2 [0]: ").upper()
+			input_user2 = self.input_usuario("Elija un opción Judador 2 [0]: ").upper()
 
 			while input_user2 not in Lista_de_Opciones_matriz or input_user1 in ("X", "0"):
-				input_user2 = input("Elija un opción Jugaror 2 [0]: ").upper()
+				input_user2 = self.input_usuario("Elija un opción Jugaror 2 [0]: ").upper()
 
 			if input_user2 in Lista_de_Opciones_matriz:
 				self.Lista_user2.append(input_user2)
@@ -218,8 +231,9 @@ class jugar:
 		#print (contador)
 		return (contador)
 
-	def Letra_ABC(self, posicion):
-		abecedario =list(string.ascii_uppercase)
+	@staticmethod
+	def Letra_ABC(posicion):
+		abecedario = list(string.ascii_uppercase)
 		letra = abecedario[posicion]
 		return letra
 
@@ -281,4 +295,5 @@ class jugar:
 
 
 
-jugar()
+#j = Tateti()
+#j.empezar()
