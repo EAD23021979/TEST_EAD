@@ -46,17 +46,21 @@ class Tateti:
 
 
 		while input_user not in self.lista_de_opciones_matriz or input_user in ("X", "0"):
-			input_user = self.input_usuario("Elija un opción Jugaror 1 [X]: ").upper()
+			input_user = self.input_usuario("Elija un opción Jugador 1 [X]: ").upper()
 
 		if input_user in self.lista_de_opciones_matriz:
 			if numero_jugador == "1":
 				self.Lista_user1.append(input_user)
-				if self.validacion_ganadores(self.Lista_user1) == 1:
+				termino_el_partido = self.validacion_ganadores(self.Lista_user1)
+				if termino_el_partido == 1:
 					print("GANO EL JUGADOR 1 [X]")
+					return
 			else:
 				self.Lista_user2.append(input_user)
-				if self.validacion_ganadores(self.Lista_user2) == 1:
+				termino_el_partido = self.validacion_ganadores(self.Lista_user2)
+				if termino_el_partido == 1:
 					print("GANO EL JUGADOR 2 [0]")
+					return
 			
 			self.lista_de_opciones_matriz = [ficha if i == input_user else i for i in self.lista_de_opciones_matriz]
 			# print(self.lista_de_opciones_matriz)
@@ -212,17 +216,6 @@ class Tateti:
 
 		print("FIN DEL JUEGO")
 
-
-	def Contar_X(self, fila):
-
-		contador = 0
-
-		for i in fila:
-			if i == "X":
-				contador = contador + 1
-		#print (contador)
-		return (contador)
-
 	@staticmethod
 	def Letra_ABC(posicion):
 		abecedario = list(string.ascii_uppercase)
@@ -248,32 +241,26 @@ class Tateti:
 		Partido_Cerrado = 0
 
 		for a in self.winall_auto_step2:
-			comparando =[]
+			comparando = []
 			#DEBUGMODE print ("Fun_self.winall_auto_step2", self.winall_auto_step2)
 			#DEBUGMODE print ("FunC(a)", a)
-			if len(comparando)<=self.VL:
+			if len(comparando) <= self.VL:
 
 				for i in listaPlayer:
 					if i in a:
 						#DEBUGMODE print ("ListaJugador a comparar",listaPlayer)# Lista_user1:  ['B2', 'A2', 'B1']
 						#DEBUGMODE print ("Lista que compara", a) #a=['A2', 'B2', 'C2']
 						comparando.append(i)
-						#DEBUGMODE print ("hay coincidencia?:",comparando)
-						#DEBUGMODE print (len(comparando))
-						if len(comparando)>=self.VL:
-							#DEBUGMODE print(comparando)
-							Partido_Cerrado = Partido_Cerrado + 1
+						if len(comparando) >= self.VL:
+							print(comparando)
 							#DEBUGMODE print ("HAY GANADOR querido")
 							#DEBUGMODE print ("Partido_Cerrado Func", Partido_Cerrado)
-							return Partido_Cerrado
+							return 1
 
 					else:
-						if len(comparando)>=self.VL:
+						if len(comparando) >= self.VL:
 							break
-						else:
-							#DEBUGMODE print ("no Match")
-							comparando =[]
-							#DEBUGMODE print("Comparando_limpio", comparando)
+
 			else:
 				break
 
