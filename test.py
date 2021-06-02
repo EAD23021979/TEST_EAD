@@ -15,6 +15,7 @@ class TestTateti:
         t.input_jugador("1", "C1")
         captured = capsys.readouterr()
         assert("GANO EL JUGADOR 1 [X]" in captured.out)
+        assert ("GANO EL JUGADOR 2 [0]" not in captured.out)
 
     def test_bug_2021(self, capsys):
         t = Tateti("test")
@@ -26,6 +27,8 @@ class TestTateti:
         t.input_jugador("1", "B3")
         t.input_jugador("2", "B2")
         t.input_jugador("1", "C1")
+
         captured = capsys.readouterr()
-        # import pdb; pdb.set_trace()
+
         assert ("GANO EL JUGADOR 1 [X]" in captured.out)
+        assert ("GANO EL JUGADOR 2 [0]" not in captured.out)

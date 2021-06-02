@@ -9,14 +9,15 @@ import string #importo funciones para tener el abecedario en una lista.
 
 
 class Tateti:
-	Lista_user1 = []
-	Lista_user2 = []
-	Partido_Cerrado = 0
-	VL = 0
-	lista_de_opciones_matriz = []
-	winall_auto_step2 = []
+
 
 	def __init__(self, origen="consola"):
+		self.Lista_user1 = []
+		self.Lista_user2 = []
+		self.Partido_Cerrado = 0
+		self.VL = 0
+		self.lista_de_opciones_matriz = []
+		self.winall_auto_step2 = []
 		self.origen = origen
 
 	def input_usuario(self, msg, test_value=""):
